@@ -164,7 +164,7 @@ export default function AdminDashboard() {
         <Card className="col-span-2 p-5">
           <h3 className="font-semibold text-white mb-4">Umsatz Übersicht 2024</h3>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={UMSATZ_MONATLICH} animationDuration={800}>
+            <BarChart data={UMSATZ_MONATLICH}>
               <XAxis dataKey="monat" tick={{ fill:'#6B7280', fontSize:12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill:'#6B7280', fontSize:11 }} axisLine={false} tickLine={false} tickFormatter={v => `€${(v/1000).toFixed(0)}k`} />
               <Tooltip content={<CustomTooltip />} />
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
           <h3 className="font-semibold text-white mb-4">Pakete Verteilung</h3>
           <ResponsiveContainer width="100%" height={160}>
             <PieChart>
-              <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} dataKey="value" animationDuration={800}>
+              <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} dataKey="value">
                 {pieData.map((_, i) => (
                   <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                 ))}
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
       <Card className="p-5">
         <h3 className="font-semibold text-white mb-4">Lead Entwicklung (letzte 4 Wochen)</h3>
         <ResponsiveContainer width="100%" height={160}>
-          <LineChart data={LEADS_WOECHENTLICH} animationDuration={800}>
+          <LineChart data={LEADS_WOECHENTLICH}>
             <XAxis dataKey="woche" tick={{ fill:'#6B7280', fontSize:12 }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fill:'#6B7280', fontSize:11 }} axisLine={false} tickLine={false} />
             <Tooltip content={<LeadsTooltip />} />
