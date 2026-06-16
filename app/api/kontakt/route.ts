@@ -1,3 +1,5 @@
+﻿export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
 import { NextResponse } from 'next/server'
@@ -17,21 +19,21 @@ export async function POST(req: Request) {
 
     await sendEmail({
       to: 'team@scalegroupe.de',
-      subject: `🔔 Neue Anfrage: ${body.name}`,
+      subject: `ðŸ”” Neue Anfrage: ${body.name}`,
       html: `<h2>Neue Kontaktanfrage</h2>
         <p><strong>Name:</strong> ${body.name}</p>
         <p><strong>E-Mail:</strong> ${body.email}</p>
-        <p><strong>Telefon:</strong> ${body.telefon || '–'}</p>
-        <p><strong>Unternehmen:</strong> ${body.unternehmen || '–'}</p>
-        <p><strong>Interesse:</strong> ${body.interesse || '–'}</p>
+        <p><strong>Telefon:</strong> ${body.telefon || 'â€“'}</p>
+        <p><strong>Unternehmen:</strong> ${body.unternehmen || 'â€“'}</p>
+        <p><strong>Interesse:</strong> ${body.interesse || 'â€“'}</p>
         <p><strong>Nachricht:</strong> ${body.nachricht}</p>
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/leads" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none">Im Admin ansehen →</a>`,
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/admin/leads" style="background:#7C3AED;color:white;padding:12px 24px;border-radius:8px;text-decoration:none">Im Admin ansehen â†’</a>`,
     })
 
     await sendEmail({
       to: body.email,
       subject: 'Deine Anfrage bei ScaleGroupe',
-      html: `<p>Hallo ${body.name},</p><p>vielen Dank für deine Anfrage! Wir melden uns innerhalb von 24 Stunden.</p><p>Dein ScaleGroupe Team</p>`,
+      html: `<p>Hallo ${body.name},</p><p>vielen Dank fÃ¼r deine Anfrage! Wir melden uns innerhalb von 24 Stunden.</p><p>Dein ScaleGroupe Team</p>`,
     })
 
     return NextResponse.json({ success: true, id: lead.id })

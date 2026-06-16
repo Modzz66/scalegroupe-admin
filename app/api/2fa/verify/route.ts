@@ -1,3 +1,5 @@
+﻿export const dynamic = 'force-dynamic'
+
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { authenticator } from 'otplib'
@@ -25,5 +27,5 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ error: 'Ungültiger Code' }, { status: 400 })
+  return NextResponse.json({ error: 'UngÃ¼ltiger Code' }, { status: 400 })
 }
