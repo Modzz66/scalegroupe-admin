@@ -2,9 +2,11 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { authenticator } from 'otplib'
 import QRCode from 'qrcode'
-import { nanoid } from 'nanoid'
+import { randomBytes } from 'crypto'
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const session = await auth()
@@ -33,7 +35,7 @@ export async function POST(req: Request) {
   const valid = authenticator.check(code, user.twoFactorSecret)
   if (!valid) return NextResponse.json({ error: 'Ungültiger Code' }, { status: 400 })
 
-  const backupCodes = Array.from({ length: 8 }, () => nanoid(10))
+  const backupCodes = Array.from({ length: 8 }, () => randomBytes(5).toString('hex'))
   const hashedCodes = await Promise.all(backupCodes.map(c => bcrypt.hash(c, 10)))
 
   await prisma.user.update({

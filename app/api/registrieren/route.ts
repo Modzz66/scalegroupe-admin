@@ -2,7 +2,9 @@ import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
 import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { nanoid } from 'nanoid'
+import { randomBytes } from 'crypto'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
   try {
@@ -19,7 +21,7 @@ export async function POST(req: Request) {
       },
     })
 
-    const token = nanoid(32)
+    const token = randomBytes(16).toString('hex')
     await prisma.verificationToken.create({
       data: {
         token, type: 'EMAIL_VERIFY', userId: user.id,
