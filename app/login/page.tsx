@@ -16,14 +16,17 @@ export default function LoginPage() {
     setError('')
 
     try {
+      // NextAuth v5: signIn returns { error: string | null }, NOT { ok: boolean }
       const res = await signIn('credentials', { email, password, redirect: false })
 
-      if (!res?.ok) {
+      // Check for error (v5 API) — do NOT check res?.ok (that's v4 only)
+      if (res?.error) {
         setError('E-Mail oder Passwort falsch.')
         setLoading(false)
         return
       }
 
+      // Login succeeded — fetch session to get role
       const session = await fetch('/api/auth/session').then(r => r.json())
 
       if (session?.user?.role === 'ADMIN') {
@@ -31,6 +34,7 @@ export default function LoginPage() {
       } else if (session?.user) {
         window.location.href = '/kunde'
       } else {
+        // Session not ready yet — force navigate, middleware will handle role
         window.location.href = '/admin'
       }
     } catch {
