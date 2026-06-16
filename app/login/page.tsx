@@ -2,8 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signIn } from 'next-auth/react'
-import { Eye, EyeOff, Lock, Mail, Loader2 } from 'lucide-react'
-import Image from 'next/image'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -26,7 +25,6 @@ export default function LoginPage() {
       return
     }
 
-    // Session abrufen und nach Rolle weiterleiten
     const session = await fetch('/api/auth/session').then(r => r.json())
     if (session?.user?.role === 'ADMIN') {
       router.push('/admin')
@@ -37,82 +35,115 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-navy-dark flex items-center justify-center p-4">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-dark/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple/10 rounded-full blur-3xl" />
-      </div>
-      <div className="relative w-full max-w-md">
-        <div className="bg-navy-light border border-navy-border rounded-2xl p-8 shadow-2xl">
-          <div className="flex flex-col items-center mb-8">
-            <Image src="/logo.png" alt="ScaleGroupe" width={150} height={40} className="invert h-10 w-auto object-contain mb-4" />
-            <h1 className="font-display font-bold text-2xl text-white">Admin Login</h1>
-            <p className="text-gray-400 text-sm mt-1">Meld dich mit deinem Account an</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm text-gray-400 font-medium">E-Mail</label>
-              <div className="relative">
-                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="deine@email.de"
-                  required
-                  className="w-full bg-navy-dark border border-navy-border rounded-xl pl-10 pr-4 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-purple-400 transition-colors"
-                />
+    <div className="min-h-screen flex" style={{ background: '#0D0F1F' }}>
+      {/* Left decorative panel */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center"
+        style={{ background: 'linear-gradient(135deg, #1C1F3A 0%, #13162B 100%)' }}>
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-80 h-80 rounded-full opacity-20"
+            style={{ background: 'radial-gradient(circle, #7C3AED, transparent)' }} />
+          <div className="absolute bottom-1/3 right-1/4 w-64 h-64 rounded-full opacity-10"
+            style={{ background: 'radial-gradient(circle, #9B59F5, transparent)' }} />
+          <div className="absolute inset-0 opacity-5"
+            style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
+        </div>
+        <div className="relative text-center px-12">
+          <img src="/logo.jpg" alt="ScaleGroupe" className="h-12 w-auto mx-auto mb-8 object-contain brightness-0 invert" />
+          <h2 className="text-3xl font-bold text-white mb-4" style={{ fontFamily: 'system-ui' }}>
+            Willkommen zurück
+          </h2>
+          <p className="text-gray-400 text-lg leading-relaxed">
+            Dein persönliches Dashboard für Projekte, Rechnungen und mehr.
+          </p>
+          <div className="mt-10 flex flex-col gap-4">
+            {['Projekte verwalten', 'Rechnungen einsehen', 'Dateien austauschen'].map(item => (
+              <div key={item} className="flex items-center gap-3 text-left">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.3)' }}>
+                  <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-gray-300 text-sm">{item}</span>
               </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Right login form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="w-full max-w-sm">
+          <img src="/logo.jpg" alt="ScaleGroupe" className="h-10 w-auto mb-8 object-contain brightness-0 invert lg:hidden" />
+          <h1 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: 'system-ui' }}>Anmelden</h1>
+          <p className="text-gray-400 text-sm mb-8">Gib deine Zugangsdaten ein um fortzufahren.</p>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <div>
+              <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">E-Mail</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="deine@email.de"
+                required
+                className="w-full px-4 py-3 rounded-xl text-white text-sm placeholder-gray-600 outline-none transition-all"
+                style={{ background: '#1C1F3A', border: '1px solid rgba(255,255,255,0.08)' }}
+                onFocus={e => (e.target.style.borderColor = '#7C3AED')}
+                onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
+              />
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm text-gray-400 font-medium">Passwort</label>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Passwort</label>
+                <a href="/passwort-reset" className="text-xs text-purple-400 hover:text-purple-300 transition-colors">
+                  Vergessen?
+                </a>
+              </div>
               <div className="relative">
-                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full bg-navy-dark border border-navy-border rounded-xl pl-10 pr-10 py-2.5 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-purple-400 transition-colors"
+                  className="w-full px-4 py-3 pr-11 rounded-xl text-white text-sm placeholder-gray-600 outline-none transition-all"
+                  style={{ background: '#1C1F3A', border: '1px solid rgba(255,255,255,0.08)' }}
+                  onFocus={e => (e.target.style.borderColor = '#7C3AED')}
+                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-                >
+                <button type="button" onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors">
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
-                <p className="text-red-400 text-sm">{error}</p>
+              <div className="px-4 py-3 rounded-xl text-sm text-red-400"
+                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                {error}
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
-              style={{ background: 'linear-gradient(135deg,#5B21B6,#9B59F5)' }}
+              className="w-full py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 transition-opacity disabled:opacity-60 mt-1"
+              style={{ background: 'linear-gradient(135deg, #5B21B6, #7C3AED)' }}
             >
               {loading && <Loader2 size={16} className="animate-spin" />}
-              {loading ? 'Wird angemeldet...' : 'Anmelden'}
+              {loading ? 'Anmelden...' : 'Anmelden'}
             </button>
-
-            <div className="flex items-center justify-between text-sm pt-1">
-              <a href="/passwort-reset" className="text-purple-400 hover:text-purple-300 transition-colors">
-                Passwort vergessen?
-              </a>
-              <a href="/registrieren" className="text-gray-500 hover:text-gray-300 transition-colors">
-                Konto erstellen →
-              </a>
-            </div>
           </form>
+
+          <p className="text-center text-sm text-gray-500 mt-8">
+            Noch kein Konto?{' '}
+            <a href="/registrieren" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
+              Jetzt registrieren
+            </a>
+          </p>
         </div>
       </div>
     </div>
