@@ -52,7 +52,9 @@ export default function RegistrierenPage() {
       <div className="w-full max-w-md">
         <div className="bg-navy-light border border-navy-border rounded-2xl p-8 shadow-2xl">
           <div className="flex flex-col items-center mb-8">
-            <Image src="/logo.png" alt="ScaleGroupe" width={150} height={40} className="invert h-10 w-auto object-contain mb-4" />
+            <div style={{ background: 'white', borderRadius: '10px', padding: '6px 14px', display: 'inline-flex', marginBottom: '16px' }}>
+              <Image src="/logo.jpg" alt="ScaleGroupe" width={130} height={36} className="h-9 w-auto object-contain" />
+            </div>
             <h1 className="font-bold text-2xl text-white">Konto erstellen</h1>
             <p className="text-gray-400 text-sm mt-1">Starte dein ScaleGroupe-Portal</p>
           </div>

@@ -26,7 +26,9 @@ function VerifyContent() {
   return (
     <div className="min-h-screen bg-navy-dark flex items-center justify-center p-4">
       <div className="bg-navy-light border border-navy-border rounded-2xl p-10 max-w-md w-full text-center">
-        <Image src="/logo.png" alt="ScaleGroupe" width={120} height={32} className="invert h-8 w-auto object-contain mx-auto mb-6" />
+        <div style={{ background: 'white', borderRadius: '10px', padding: '5px 12px', display: 'inline-flex', marginBottom: '24px' }}>
+          <Image src="/logo.jpg" alt="ScaleGroupe" width={110} height={30} className="h-8 w-auto object-contain" />
+        </div>
         {status === 'loading' && (
           <>
             <Loader2 size={48} className="animate-spin text-purple mx-auto mb-4" />

@@ -25,8 +25,10 @@ export default function KundeSidebar() {
 
   return (
     <aside className="w-64 h-screen fixed left-0 top-0 bg-navy-dark border-r border-navy-border flex flex-col z-30">
-      <div className="flex items-center gap-3 px-6 py-5 border-b border-navy-border">
-        <Image src="/logo.png" alt="ScaleGroupe" width={120} height={32} className="invert h-8 w-auto object-contain" />
+      <div className="flex items-center px-5 py-4 border-b border-navy-border">
+        <div style={{ background: 'white', borderRadius: '8px', padding: '5px 10px', display: 'inline-flex', alignItems: 'center' }}>
+          <Image src="/logo.jpg" alt="ScaleGroupe" width={110} height={28} className="h-7 w-auto object-contain" />
+        </div>
       </div>
       <div className="px-4 py-3 bg-purple-500/10 border-b border-navy-border">
         <p className="text-xs text-purple-light font-semibold">Kundenportal</p>
