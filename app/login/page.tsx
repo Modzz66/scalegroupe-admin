@@ -1,8 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { login } from '@/lib/auth'
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { signIn } from 'next-auth/react'
+import { Eye, EyeOff, Lock, Mail, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 
 export default function LoginPage() {
@@ -17,14 +17,23 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    await new Promise(r => setTimeout(r, 500))
-    const user = login(email, password)
-    if (user) {
-      router.push(user.role === 'ADMIN' ? '/admin' : '/kunde')
-    } else {
+
+    const res = await signIn('credentials', { email, password, redirect: false })
+
+    if (!res?.ok) {
       setError('E-Mail oder Passwort falsch.')
       setLoading(false)
+      return
     }
+
+    // Session abrufen und nach Rolle weiterleiten
+    const session = await fetch('/api/auth/session').then(r => r.json())
+    if (session?.user?.role === 'ADMIN') {
+      router.push('/admin')
+    } else {
+      router.push('/kunde')
+    }
+    router.refresh()
   }
 
   return (
@@ -88,20 +97,22 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-              style={{ background:'linear-gradient(135deg,#5B21B6,#9B59F5)' }}
+              className="w-full py-3 rounded-xl font-semibold text-white transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+              style={{ background: 'linear-gradient(135deg,#5B21B6,#9B59F5)' }}
             >
+              {loading && <Loader2 size={16} className="animate-spin" />}
               {loading ? 'Wird angemeldet...' : 'Anmelden'}
             </button>
-          </form>
 
-          <div className="mt-6 p-4 bg-navy-dark rounded-xl border border-navy-border">
-            <p className="text-xs text-gray-500 font-semibold mb-2">Test-Zugänge:</p>
-            <div className="space-y-1 text-xs text-gray-600">
-              <p><span className="text-gray-400">Admin:</span> enes@scalegroupe.de / admin123</p>
-              <p><span className="text-gray-400">Kunde:</span> mueller@baeckerei.de / kunde123</p>
+            <div className="flex items-center justify-between text-sm pt-1">
+              <a href="/passwort-reset" className="text-purple-400 hover:text-purple-300 transition-colors">
+                Passwort vergessen?
+              </a>
+              <a href="/registrieren" className="text-gray-500 hover:text-gray-300 transition-colors">
+                Konto erstellen →
+              </a>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

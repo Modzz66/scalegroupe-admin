@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(cuid())
+  name             String
+  email            String    @unique
+  emailVerified    DateTime?
+  password         String
+  role             Role      @default(KUNDE)
+  twoFactorEnabled Boolean   @default(false)
+  twoFactorSecret  String?
+  backupCodes      String[]  @default([])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  kunde            Kunde?
+  sessions         Session[]
+  tokens           VerificationToken[]
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  id      String    @id @default(cuid())
+  token   String    @unique
+  expires DateTime
+  type    TokenType
+  userId  String
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum TokenType { EMAIL_VERIFY PASSWORD_RESET }
+enum Role      { ADMIN KUNDE }
+
+model Kunde {
+  id          String     @id @default(cuid())
+  name        String
+  email       String     @unique
+  telefon     String?
+  unternehmen String?
+  paket       String?
+  status      String     @default("Ausstehend")
+  notizen     String?
+  createdAt   DateTime   @default(now())
+  userId      String?    @unique
+  user        User?      @relation(fields: [userId], references: [id])
+  projekte    Projekt[]
+  rechnungen  Rechnung[]
+  dateien     Datei[]
+  feedbacks   Feedback[]
+  termine     Termin[]
+}
+
+model Projekt {
+  id             String      @id @default(cuid())
+  name           String
+  beschreibung   String?
+  paket          String?
+  status         String      @default("Offen")
+  fortschritt    Int         @default(0)
+  budget         Float?
+  deadline       DateTime?
+  verantwortlich String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  kundeId        String
+  kunde          Kunde       @relation(fields: [kundeId], references: [id])
+  aufgaben       Aufgabe[]
+  kommentare     Kommentar[]
+  dateien        Datei[]
+}
+
+model Rechnung {
+  id           String    @id @default(cuid())
+  nummer       String    @unique
+  betrag       Float
+  status       String    @default("Entwurf")
+  beschreibung String?
+  datum        DateTime  @default(now())
+  faellig      DateTime?
+  bezahltAm    DateTime?
+  stripeId     String?
+  createdAt    DateTime  @default(now())
+  kundeId      String
+  kunde        Kunde     @relation(fields: [kundeId], references: [id])
+}
+
+model Lead {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  telefon     String?
+  unternehmen String?
+  interesse   String?
+  nachricht   String
+  status      String   @default("Neu")
+  quelle      String   @default("Kontaktformular")
+  gelesen     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Aufgabe {
+  id             String    @id @default(cuid())
+  titel          String
+  beschreibung   String?
+  status         String    @default("Todo")
+  prioritaet     String    @default("Mittel")
+  faellig        DateTime?
+  verantwortlich String?
+  createdAt      DateTime  @default(now())
+  projektId      String?
+  projekt        Projekt?  @relation(fields: [projektId], references: [id])
+}
+
+model Termin {
+  id        String    @id @default(cuid())
+  titel     String
+  datum     DateTime
+  uhrzeit   String
+  typ       String    @default("Meeting")
+  notizen   String?
+  createdAt DateTime  @default(now())
+  kundeId   String?
+  kunde     Kunde?    @relation(fields: [kundeId], references: [id])
+}
+
+model Datei {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  typ       String
+  groesse   Int
+  ordner    String   @default("Allgemein")
+  createdAt DateTime @default(now())
+  kundeId   String?
+  kunde     Kunde?   @relation(fields: [kundeId], references: [id])
+  projektId String?
+  projekt   Projekt? @relation(fields: [projektId], references: [id])
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  bewertung Int
+  kommentar String?
+  createdAt DateTime @default(now())
+  kundeId   String
+  kunde     Kunde    @relation(fields: [kundeId], references: [id])
+}
+
+model Kommentar {
+  id        String   @id @default(cuid())
+  text      String
+  autor     String
+  createdAt DateTime @default(now())
+  projektId String
+  projekt   Projekt  @relation(fields: [projektId], references: [id])
+}

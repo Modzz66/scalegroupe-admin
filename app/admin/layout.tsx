@@ -1,7 +1,8 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
-import { requireAuth } from '@/lib/auth'
+import { useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useStore } from '@/lib/store'
 import AdminSidebar from '@/components/layout/AdminSidebar'
 import AdminTopbar from '@/components/layout/AdminTopbar'
 
@@ -26,14 +27,25 @@ function getTitle(pathname: string): string {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [authed, setAuthed] = useState(false)
+  const router = useRouter()
+  const { data: session, status } = useSession()
+  const loadAdminData = useStore(s => s.loadAdminData)
 
   useEffect(() => {
-    const user = requireAuth('ADMIN')
-    if (user) setAuthed(true)
-  }, [])
+    if (status === 'unauthenticated') {
+      router.push('/login')
+    } else if (status === 'authenticated' && (session?.user as any)?.role !== 'ADMIN') {
+      router.push('/kunde')
+    }
+  }, [status, session, router])
 
-  if (!authed) {
+  useEffect(() => {
+    if (status === 'authenticated' && (session?.user as any)?.role === 'ADMIN') {
+      loadAdminData()
+    }
+  }, [status])
+
+  if (status === 'loading' || !session || (session?.user as any)?.role !== 'ADMIN') {
     return (
       <div className="min-h-screen bg-navy-dark flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-purple border-t-transparent rounded-full animate-spin" />

@@ -1,28 +1,22 @@
 'use client'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useSession, signOut } from 'next-auth/react'
 import { Home, FolderOpen, Receipt, Files, MessageSquare, LogOut } from 'lucide-react'
-import { getCurrentUser, logout } from '@/lib/auth'
 import { getInitials } from '@/lib/utils'
 
 const NAV_ITEMS = [
-  { href:'/kunde',            icon:Home,          label:'Mein Dashboard' },
-  { href:'/kunde/projekte',   icon:FolderOpen,    label:'Meine Projekte' },
-  { href:'/kunde/rechnungen', icon:Receipt,       label:'Rechnungen'     },
-  { href:'/kunde/dateien',    icon:Files,         label:'Meine Dateien'  },
-  { href:'/kunde/feedback',   icon:MessageSquare, label:'Feedback'       },
+  { href: '/kunde',            icon: Home,          label: 'Mein Dashboard' },
+  { href: '/kunde/projekte',   icon: FolderOpen,    label: 'Meine Projekte' },
+  { href: '/kunde/rechnungen', icon: Receipt,       label: 'Rechnungen'     },
+  { href: '/kunde/dateien',    icon: Files,         label: 'Meine Dateien'  },
+  { href: '/kunde/feedback',   icon: MessageSquare, label: 'Feedback'       },
 ]
 
 export default function KundeSidebar() {
   const pathname = usePathname()
-  const router = useRouter()
-  const user = getCurrentUser()
-
-  function handleLogout() {
-    logout()
-    router.push('/login')
-  }
+  const { data: session } = useSession()
 
   function isActive(href: string) {
     if (href === '/kunde') return pathname === '/kunde'
@@ -59,17 +53,21 @@ export default function KundeSidebar() {
         </div>
       </nav>
       <div className="p-4 border-t border-navy-border">
-        {user && (
+        {session?.user && (
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-              style={{ background:'linear-gradient(135deg,#5B21B6,#9B59F5)' }}>
-              {getInitials(user.name)}
+              style={{ background: 'linear-gradient(135deg,#5B21B6,#9B59F5)' }}>
+              {getInitials(session.user.name || '')}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">{user.name}</p>
-              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+              <p className="text-sm font-semibold text-white truncate">{session.user.name}</p>
+              <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
             </div>
-            <button onClick={handleLogout} className="text-gray-500 hover:text-red-400 transition-colors" title="Abmelden">
+            <button
+              onClick={() => signOut({ callbackUrl: '/login' })}
+              className="text-gray-500 hover:text-red-400 transition-colors"
+              title="Abmelden"
+            >
               <LogOut size={16} />
             </button>
           </div>
